@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Light - Mr. David</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 20px;
+      transition: background 1s, color 1s;
+    }
+    h1 {
+      font-size: 2em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.2em;
+      margin: 8px 0;
+    }
+    .quote {
+      font-style: italic;
+      margin-top: 20px;
+      background: var(--card-bg);
+      padding: 15px;
+      border-radius: 15px;
+      max-width: 500px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      animation: fadeIn 2s ease;
+    }
+    textarea {
+      margin-top: 20px;
+      width: 80%;
+      max-width: 400px;
+      height: 80px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      resize: none;
+      font-family: 'Poppins', sans-serif;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Selamat datang, Mr. David 🌞</h1>
+  <p id="today"></p>
+  <p id="birthday"></p>
+  <div class="quote" id="quote"></div>
+
+  <textarea id="customQuote" placeholder="Tulis pesan motivasi dari dirimu sendiri di sini..."></textarea>
+  <button id="saveQuote">Simpan Pesan</button>
+
+  <script>
+    // === Tanggal & Ulang Tahun ===
+    const birthday = new Date(new Date().getFullYear(), 4, 12); // 12 Mei
+    const today = new Date();
+    if (today > birthday) birthday.setFullYear(today.getFullYear() + 1);
+    const diffDays = Math.ceil((birthday - today) / (1000 * 60 * 60 * 24));
+
+    // === Tema Siang & Malam ===
+    const hour = today.getHours();
+    if (hour >= 6 && hour < 18) {
+      document.documentElement.style.setProperty('--bg', 'linear-gradient(to bottom right, #cce5ff, #f8f9fa)');
+      document.documentElement.style.setProperty('--text', '#333');
+      document.documentElement.style.setProperty('--accent', '#0077cc');
+      document.documentElement.style.setProperty('--card-bg', '#ffffffcc');
+    } else {
+      document.documentElement.style.setProperty('--bg', 'linear-gradient(to bottom right, #001f3f, #011627)');
+      document.documentElement.style.setProperty('--text', '#f1f1f1');
+      document.documentElement.style.setProperty('--accent', '#66ccff');
+      document.documentElement.style.setProperty('--card-bg', '#022240cc');
+    }
+
+    // === Pesan Motivasi ===
+    const quotes = [
+      "Percayalah, setiap langkah kecil tetap membawa kamu maju.",
+      "Kamu lebih kuat dari yang kamu pikirkan, Mr. David.",
+      "Hari ini adalah kesempatan baru untuk menjadi versi terbaik dari dirimu.",
+      "Jangan takut gagal, karena setiap kegagalan adalah pelajaran berharga.",
+      "Langit tak selalu cerah, tapi matahari selalu kembali bersinar.",
+      "Teruslah berjalan, meski pelan — yang penting kamu tetap maju."
+    ];
+
+    // Ambil pesan buatan pengguna dari localStorage
+    const savedQuote = localStorage.getItem("customQuote");
+    if (savedQuote) quotes.unshift(savedQuote);
+
+    // Pilih pesan acak
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+
+    // === Tampilkan ke layar ===
+    document.getElementById("today").textContent = "Hari ini: " + today.toLocaleDateString('id-ID', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    const birthdayText = diffDays === 0
+      ? "🎂 Selamat Ulang Tahun, Mr. David! 🎉 Semoga harimu penuh cahaya dan kebahagiaan."
+      : `🎂 Ulang tahunmu: 25 april — tinggal ${diffDays} hari lagi!`;
+
+    document.getElementById("birthday").textContent = birthdayText;
+    document.getElementById("quote").textContent = randomQuote;
+
+    // === Simpan pesan motivasi pribadi ===
+    document.getElementById("saveQuote").addEventListener("click", () => {
+      const text = document.getElementById("customQuote").value.trim();
+      if (text) {
+        localStorage.setItem("customQuote", text);
+        alert("Pesanmu sudah disimpan, Mr. David 🌟");
+        location.reload();
+      } else {
+        alert("Tulislah pesan motivasi sebelum menyimpan, ya!");
+      }
+    });
+
+    // === Notifikasi otomatis ===
+    if ("Notification" in window) {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          const message = diffDays === 0
+            ? "Selamat ulang tahun, Mr. David 🎉 Semoga hari ini penuh senyum dan harapan baru!"
+            : "Selamat pagi, Mr. David 🌅 Jangan lupa tersenyum hari ini.";
+          new Notification("Daily Light 🌤", { body: message });
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
